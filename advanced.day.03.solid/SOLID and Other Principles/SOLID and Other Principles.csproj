@@ -39,6 +39,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="1. Single Responsibility\1.2. After - Drawing Shape\Contracts\DrawableRectangle.cs" />
     <Compile Include="1. Single Responsibility\1.2. After - Drawing Shape\Contracts\IDrawingContext.cs" />
     <Compile Include="1. Single Responsibility\1.2. After - Drawing Shape\Contracts\IDrawingManager.cs" />
     <Compile Include="1. Single Responsibility\1.2. After - Drawing Shape\Contracts\IRenderer.cs" />
@@ -85,6 +86,14 @@
     <Compile Include="4. Interface Segregation\2.1. Identity - Before\Contracts\IAccount.cs" />
     <Compile Include="4. Interface Segregation\2.1. Identity - Before\Contracts\IUser.cs" />
     <Compile Include="4. Interface Segregation\2.1. Identity - Before\AccountManager.cs" />
+    <Compile Include="4. Interface Segregation\2.2 Identity - After\AccountContoller.cs" />
+    <Compile Include="4. Interface Segregation\2.2 Identity - After\AccountManager.cs" />
+    <Compile Include="4. Interface Segregation\2.2 Identity - After\Contracts\IAccount.cs" />
+    <Compile Include="4. Interface Segregation\2.2 Identity - After\Contracts\IPassword.cs" />
+    <Compile Include="4. Interface Segregation\2.2 Identity - After\Contracts\ILogin.cs" />
+    <Compile Include="4. Interface Segregation\2.2 Identity - After\Contracts\IRegister.cs" />
+    <Compile Include="4. Interface Segregation\2.2 Identity - After\Contracts\IUser.cs" />
+    <Compile Include="4. Interface Segregation\2.2 Identity - After\PasswordManager.cs" />
     <Compile Include="5. Dependency Inversion\1.2. Hello World - After\HelloWorld.cs" />
     <Compile Include="5. Dependency Inversion\1.1. Hello World - Before\HelloWorld.cs" />
     <Compile Include="5. Dependency Inversion\2.1. Worker - Before\Manager.cs" />
