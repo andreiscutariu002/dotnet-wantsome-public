@@ -7,7 +7,7 @@
     {
         Task<Session> Get(int id);
 
-        Task<Session> Save(Session session);
+        ValueTask<Session> Save(Session session);
 
         Task<Session> Remove(int id);
     }

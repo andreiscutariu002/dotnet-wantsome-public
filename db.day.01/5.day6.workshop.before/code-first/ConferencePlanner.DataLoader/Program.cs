@@ -43,7 +43,7 @@
                 {
                     if (!speakerNames.ContainsKey(thisSpeakerName.Value<string>()))
                     {
-                        var thisSpeaker = new Speaker {Name = thisSpeakerName.Value<string>()};
+                        var thisSpeaker = new Speaker {FullName = thisSpeakerName.Value<string>()};
                         db.Speakers.Add(thisSpeaker);
                         speakerNames.Add(thisSpeakerName.Value<string>(), thisSpeaker);
                         Console.WriteLine(thisSpeakerName.Value<string>());

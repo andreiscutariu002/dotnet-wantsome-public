@@ -1,5 +1,6 @@
 ﻿namespace ConferencePlanner.Data
 {
+    using System.Collections.Generic;
     using Entities;
     using Microsoft.EntityFrameworkCore;
 
@@ -26,21 +27,28 @@
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            // Unique UserName Attendee
             // Ex1 - todo
+            modelBuilder.Entity<Attendee>(a => a.HasIndex(e => e.UserName).IsUnique());
 
-            // Many-to-many: Session <-> Attendee
-            // Ex1 - todo
+            modelBuilder.Entity<SessionAttendee>()
+                .HasKey(ss => new { ss.SessionId, ss.AttendeeId });
 
-            // Many-to-many: Speaker <-> Session
-            // Ex1 - todo        
+            modelBuilder.Entity<SessionSpeaker>()
+                .HasKey(ss => new { ss.SessionId, ss.SpeakerId });
+
+            // Ex2 here
+            modelBuilder.Entity<Track>().HasData(new List<Track>()
+            {
+                new Track {Id = 10,Name = "C#"},
+                new Track {Id = 11,Name = "PHP"},
+            });
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             if (!optionsBuilder.IsConfigured)
             {
-                optionsBuilder.UseSqlServer("TODO - Write Connection String");
+                optionsBuilder.UseSqlServer("Data Source=.; Integrated Security=True; Initial Catalog=ConferencePlanner;");
             }
         }
     }

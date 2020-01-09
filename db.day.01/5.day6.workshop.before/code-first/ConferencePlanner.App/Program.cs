@@ -3,6 +3,7 @@
     using System;
     using System.Linq;
     using Data;
+    using Data.Entities;
     using Microsoft.EntityFrameworkCore;
 
     internal class Program
@@ -13,7 +14,11 @@
 
             using var context = new ApplicationDbContext();
 
-            Ex01.Run(context);
+            //Ex01.Run(context);
+
+            //Ex02.Run(context);
+
+            Ex03.Run(context);
         }
     }
 
@@ -23,6 +28,12 @@
         {
             // Todo
             // write a simple query to validate ApplicationDbContext
+
+            Func<string, string> someFunction = s => s.ToLower();
+
+            var sessions = context.Sessions.Where(s => s.Title.Contains(".NET")).ToList();
+
+            var sessions2 = context.Sessions.Where(s => someFunction(s.Title).Contains(".NET")).ToList();
         }
     }
 
@@ -43,7 +54,18 @@
             // Todo
             // on Attendee model, add a new property, date of birth
             // add a migration, run the migration
-            // insert then read a Attendee
+            // insert then read an Attendee
+
+            context.Attendees.Add(new Attendee
+            {
+                UserName = "andrei", 
+                EmailAddress = "andrei@mail.com", 
+                FirstName = "a", 
+                LastName = "a",
+                DateOfBirth = DateTime.Now
+            });
+
+            context.SaveChanges();
         }
     }
 
@@ -73,6 +95,14 @@
             // all Sessions that title contains ".NET"
 
             // number of sessions for each speaker
+            var session = context.SessionSpeaker
+                .GroupBy(x => x.SpeakerId)
+                .Select(x => new
+                {
+                    Id = x.Key,
+                    Count = x.Count()
+                })
+                .ToList();
 
             // number of tracks per session
 

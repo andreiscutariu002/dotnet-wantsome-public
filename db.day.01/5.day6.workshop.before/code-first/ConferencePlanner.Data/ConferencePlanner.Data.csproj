@@ -19,6 +19,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\ConferencePlanner.Entities\ConferencePlanner.Entities.csproj" />
+    <ProjectReference Include="..\ConferencePlanner.Services\ConferencePlanner.Services.csproj" />
   </ItemGroup>
 
 </Project>

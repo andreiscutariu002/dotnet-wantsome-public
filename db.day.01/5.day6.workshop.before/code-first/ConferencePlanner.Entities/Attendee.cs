@@ -1,5 +1,6 @@
 namespace ConferencePlanner.Entities
 {
+    using System;
     using System.ComponentModel.DataAnnotations;
 
     public class Attendee
@@ -20,5 +21,7 @@ namespace ConferencePlanner.Entities
 
         [StringLength(256)]
         public virtual string EmailAddress { get; set; }
+
+        public DateTime DateOfBirth { get; set; }
     }
 }
