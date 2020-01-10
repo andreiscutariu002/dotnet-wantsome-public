@@ -14,7 +14,8 @@ namespace FirstApi
 
         public static IHostBuilder CreateHostBuilder(string[] args)
         {
-            return Host.CreateDefaultBuilder(args)
+            var defaultBuilder = Host.CreateDefaultBuilder(args);
+            return defaultBuilder
                 .ConfigureWebHostDefaults(webBuilder => { webBuilder.UseStartup<Startup>(); });
         }
     }

@@ -1,14 +1,34 @@
 ﻿namespace FirstApi.Controllers
 {
+    using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
     using Data;
+    using Microsoft.AspNetCore.Diagnostics;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.EntityFrameworkCore;
     using Models;
 
-    [Route("api/[controller]")]
+    [ApiController]
+    [ApiExplorerSettings(IgnoreApi = true)]
+    public class ErrorController : ControllerBase
+    {
+        [Route("/error")]
+        public IActionResult Error() => this.Problem();
+
+        [Route("/error-dev")]
+        public IActionResult ErrorDev()
+        {
+            var context = this.HttpContext.Features.Get<IExceptionHandlerFeature>();
+
+            return this.Problem(
+                detail: context.Error.StackTrace,
+                title: context.Error.Message);
+        }
+    }
+    
+    [Route("api/todoitems")]
     [ApiController]
     public class TodoItemsController : ControllerBase
     {
@@ -46,7 +66,10 @@
         [HttpPut("{id}")]
         public async Task<IActionResult> PutTodoItem(long id, TodoItem todoItem)
         {
-            if (id != todoItem.Id) return this.BadRequest();
+            if (id < 0)
+            {
+                throw new ArgumentException("negative id");
+            }
 
             this.context.Entry(todoItem).State = EntityState.Modified;
 
