@@ -10,5 +10,7 @@
         }
 
         public DbSet<Hotel> Hotels { get; set; }
+
+        public DbSet<Room> Room { get; set; }
     }
 }
