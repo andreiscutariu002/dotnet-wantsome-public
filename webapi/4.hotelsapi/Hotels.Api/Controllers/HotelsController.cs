@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Hotels.Api.Data.Entities;
+using Hotels.Api.Extensions;
+using Hotels.Api.Resources.Hotel;
 using Hotels.Api.Services;
 using Microsoft.Extensions.Configuration;
 
@@ -26,33 +28,33 @@ namespace Hotels.Api.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<Hotel>> Get(int id, CancellationToken token)
+        [Produces(typeof(HotelResource))]
+        public IActionResult Get(int id, CancellationToken token)
         {
-            if (id < 0)
-            {
-                throw new AccessViolationException("Negative id exception");
-            }
-
-            var entity = await this.context.Hotels.FindAsync(id, token);
-
-            if (entity == null)
-            {
-                return this.NotFound();
-            }
-
-            return entity;
+            HotelResource resource;
+            return Ok(resource);
         }
 
-        [HttpPost]
-        public async Task<ActionResult<Hotel>> Post([FromBody] Hotel model, CancellationToken token)
+        [HttpGet("{id}")]
+        public ActionResult<HotelResource> Get2(int id, CancellationToken token)
         {
-            this.context.Hotels.Add(model);
-                
+            HotelResource resource;
+            return Ok(resource);
+        }
+
+
+        [HttpPost]
+        public async Task<ActionResult<HotelResource>> Post([FromBody] CreateHotelResource model, CancellationToken token)
+        {
+            var entity = model.MapAsEntity();
+
+            this.context.Hotels.Add(entity);
+
             await this.context.SaveChangesAsync(token);
 
-            this.notificationService.Notify($"hotel with id {model.Id} created!");
+            this.notificationService.Notify($"hotel with id {entity.Id} created!");
 
-            return this.CreatedAtAction("Get", new { id = model.Id }, model);
+            return this.CreatedAtAction("Get", new { id = entity.Id }, entity.MapAsResource());
         }
     }
 }
