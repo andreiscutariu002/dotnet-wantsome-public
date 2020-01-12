@@ -37,9 +37,15 @@ namespace Hotels.Api
 
             services.AddScoped<ISimpleLogger, SimpleLogger>();
 
-            services.AddResponseCaching()
-                ;
+            services.AddResponseCaching();
+            
             services.AddMemoryCache();
+
+            services.AddDistributedRedisCache(option =>
+            {
+                option.Configuration = "127.0.0.1";
+                option.InstanceName = "master";
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -61,6 +67,7 @@ namespace Hotels.Api
 
             app.UseResponseCaching();
 
+            //register cache global 
             //app.Use(async (context, next) =>
             //{
             //    context.Response.GetTypedHeaders().CacheControl =

@@ -10,10 +10,72 @@
     using Extensions.Map;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.EntityFrameworkCore;
+    using Microsoft.Extensions.Caching.Distributed;
     using Microsoft.Extensions.Caching.Memory;
     using Microsoft.Extensions.Primitives;
     using Models.Rooms;
+    using Newtonsoft.Json;
     using Services;
+
+    [Route("api/hotels/{hotelId}/dis-cached-rooms")]
+    [ApiController]
+    public class DistributedCachedRoomsController
+    {
+        private readonly ApiDbContext context;
+        private readonly IDistributedCache cache;
+        private readonly ISimpleLogger logger;
+
+        public DistributedCachedRoomsController(ApiDbContext context, IDistributedCache cache, ISimpleLogger logger)
+        {
+            this.context = context;
+            this.cache = cache;
+            this.logger = logger;
+        }
+
+        [HttpGet("")]
+        public async Task<IEnumerable<RoomResource>> Get(int hotelId, CancellationToken token)
+        {
+            var key = $"_rooms_for_hotel_{hotelId}";
+
+            var rooms = this.cache.GetString(key);
+
+            if (!string.IsNullOrEmpty(rooms))
+            {
+                this.logger.LogInfo("DistributedCachedRoomsController-Get(hotelId) cache hit");
+
+                var roomsList = this.Deserialize<List<RoomResource>>(rooms);
+
+                return roomsList;
+            }
+            else
+            {
+                this.logger.LogInfo("DistributedCachedRoomsController-Get(hotelId) db hit");
+
+                var roomsEntities = await this.context.Rooms
+                    .Include(h => h.Hotel)
+                    .Where(h => h.Hotel.Id == hotelId)
+                    .ToListAsync(token);
+
+                var options = new DistributedCacheEntryOptions();
+                options.SetAbsoluteExpiration(TimeSpan.FromSeconds(3));
+                
+                var resources = roomsEntities.Select(e => e.MapAsResource());
+                this.cache.SetString(key, this.Serialize(resources), options);
+
+                return resources;
+            }
+        }
+
+        private string Serialize(object obj)
+        {
+            return JsonConvert.SerializeObject(obj);
+        }
+
+        private T Deserialize<T>(string serialized)
+        {
+            return JsonConvert.DeserializeObject<T>(serialized);
+        }
+    }
 
     [Route("api/hotels/{hotelId}/rooms")]
     [ApiController]
@@ -22,7 +84,6 @@
         private readonly ApiDbContext context;
         private readonly ISimpleLogger logger;
         private readonly IMemoryCache memoryCache;
-        public static string Entry => "_Entry";
 
         public RoomsController(ApiDbContext context, ISimpleLogger logger, IMemoryCache memoryCache)
         {
