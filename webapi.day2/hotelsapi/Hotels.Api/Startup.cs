@@ -41,10 +41,18 @@ namespace Hotels.Api
             
             services.AddMemoryCache();
 
-            services.AddDistributedRedisCache(option =>
+            //add redis cache
+            //services.AddDistributedRedisCache(option =>
+            //{
+            //    option.Configuration = "127.0.0.1";
+            //    option.InstanceName = "master";
+            //});
+
+            services.AddDistributedSqlServerCache(options =>
             {
-                option.Configuration = "127.0.0.1";
-                option.InstanceName = "master";
+                options.ConnectionString = "Data Source=.;Initial Catalog=DistCache;Integrated Security=True;";
+                options.SchemaName = "dbo";
+                options.TableName = "TestCache";
             });
         }
 

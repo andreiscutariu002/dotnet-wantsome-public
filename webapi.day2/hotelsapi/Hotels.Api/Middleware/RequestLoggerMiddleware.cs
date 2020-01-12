@@ -1,5 +1,6 @@
 namespace Hotels.Api.Middleware
 {
+    using System;
     using System.Threading.Tasks;
     using Microsoft.AspNetCore.Http;
     using Services;
@@ -8,7 +9,6 @@ namespace Hotels.Api.Middleware
     {
         private readonly RequestDelegate next;
 
-        // #3 custom middleware
         public RequestLoggerMiddleware(RequestDelegate next)
         {
             this.next = next;
@@ -16,11 +16,12 @@ namespace Hotels.Api.Middleware
 
         public async Task Invoke(HttpContext context, ISimpleLogger simpleLogger)
         {
+            var date = DateTime.Now;
             simpleLogger.LogInfo($"Handling request: {context.Request.Method} {context.Request.Path}");
 
             await this.next.Invoke(context);
 
-            simpleLogger.LogInfo("Finished handling request.");
+            simpleLogger.LogInfo($"Finished handling request. Milliseconds: {(DateTime.Now - date).Milliseconds}");
         }
     }
 }
