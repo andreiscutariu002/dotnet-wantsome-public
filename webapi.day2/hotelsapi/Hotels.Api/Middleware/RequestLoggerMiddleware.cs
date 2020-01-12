@@ -14,13 +14,13 @@ namespace Hotels.Api.Middleware
             this.next = next;
         }
 
-        public async Task Invoke(HttpContext context, INotificationService notificationService)
+        public async Task Invoke(HttpContext context, ISimpleLogger simpleLogger)
         {
-            notificationService.Notify($"Handling request: {context.Request.Method} {context.Request.Path}");
+            simpleLogger.LogInfo($"Handling request: {context.Request.Method} {context.Request.Path}");
 
             await this.next.Invoke(context);
 
-            notificationService.Notify("Finished handling request.");
+            simpleLogger.LogInfo("Finished handling request.");
         }
     }
 }

@@ -1,8 +1,10 @@
 namespace Hotels.Api
 {
+    using System;
     using Data;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
+    using Microsoft.AspNetCore.Http;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
@@ -22,7 +24,7 @@ namespace Hotels.Api
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
-        {
+        {   
             services.AddDbContext<ApiDbContext>(options =>
                 options.UseSqlServer(this.Configuration.GetConnectionString("DefaultConnection")));
 
@@ -33,9 +35,11 @@ namespace Hotels.Api
                 c.SwaggerDoc("v1", new OpenApiInfo {Title = "Hotels API", Version = "v1"});
             });
 
-            //services.AddTransient<INotificationService, NotificationService>();
-            services.AddScoped<INotificationService, NotificationService>();
-            //services.AddSingleton<INotificationService, NotificationService>();
+            services.AddScoped<ISimpleLogger, SimpleLogger>();
+
+            services.AddResponseCaching()
+                ;
+            services.AddMemoryCache();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -54,6 +58,21 @@ namespace Hotels.Api
             {
                 app.UseExceptionHandler("/error");
             }
+
+            app.UseResponseCaching();
+
+            //app.Use(async (context, next) =>
+            //{
+            //    context.Response.GetTypedHeaders().CacheControl =
+            //        new Microsoft.Net.Http.Headers.CacheControlHeaderValue()
+            //        {
+            //            Public = true,
+            //            MaxAge = TimeSpan.FromSeconds(120)
+            //        };
+            //    context.Response.Headers[Microsoft.Net.Http.Headers.HeaderNames.Vary] =  new string[] { "Accept-Encoding" };
+
+            //    await next();
+            //});
 
             app.UseRouting();
 

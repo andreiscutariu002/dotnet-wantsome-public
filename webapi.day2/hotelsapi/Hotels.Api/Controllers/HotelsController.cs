@@ -1,25 +1,37 @@
 ﻿namespace Hotels.Api.Controllers
 {
     using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Threading;
     using System.Threading.Tasks;
     using Data;
     using Data.Entities;
     using Extensions.Map;
     using Microsoft.AspNetCore.Mvc;
+    using Microsoft.EntityFrameworkCore;
+    using Microsoft.Extensions.Caching.Memory;
     using Models.Hotels;
+    using Services;
 
     [Route("api/hotels")]
     [ApiController]
     public class HotelsController : ControllerBase
     {
         private readonly ApiDbContext context;
+        private readonly ISimpleLogger logger;
+        private readonly IMemoryCache memoryCache;
 
-        public HotelsController(ApiDbContext context)
+        public HotelsController(ApiDbContext context, ISimpleLogger logger, IMemoryCache memoryCache)
         {
             this.context = context;
+            this.logger = logger;
+            this.memoryCache = memoryCache;
         }
 
         [HttpGet("{id}")]
+        [ResponseCache(VaryByQueryKeys = new[] { "id" }, Duration = 30)]
+        //[ResponseCache(VaryByQueryKeys = new[] { "*" }, Duration = 30)]
         public async Task<ActionResult<HotelResource>> Get(int id)
         {
             if (id < 0)
@@ -33,6 +45,8 @@
                 return this.NotFound();
             }
 
+            this.logger.LogInfo("HotelsController-Get(id) hit");
+
             return entity.MapAsModel();
         }
 
@@ -43,6 +57,9 @@
             this.context.Hotels.Add(entity);
 
             await this.context.SaveChangesAsync();
+
+            var cts = new CancellationTokenSource();
+            this.memoryCache.Set($"_CTS{entity.Id}", cts);
 
             return this.CreatedAtAction("Get", new {id = entity.Id}, entity.MapAsModel());
         }
@@ -73,10 +90,28 @@
                 return this.NotFound();
             }
 
+            var rooms = await this.context.Rooms.Include(x=>x.Hotel).Where(x => x.Hotel.Id == id).ToListAsync();
+            foreach (var room in rooms)
+            {
+                this.context.Rooms.Remove(room);
+            }
+
             this.context.Hotels.Remove(hotel);
             await this.context.SaveChangesAsync();
 
+            var cts = this.memoryCache.Get<CancellationTokenSource>($"_CTS{id}");
+            cts.Cancel();
+
             return hotel;
+        }
+
+        [HttpDelete("{id}/remove-cache")]
+        public ActionResult<Hotel> RemoveCache(int id)
+        {
+            var cts = this.memoryCache.Get<CancellationTokenSource>($"_CTS{id}");
+            cts.Cancel();
+
+            return this.Ok();
         }
     }
 }
