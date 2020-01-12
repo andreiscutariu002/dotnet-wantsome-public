@@ -74,7 +74,6 @@
             }
 
             entity.UpdateWith(model);
-
             this.context.Hotels.Update(entity);
             await this.context.SaveChangesAsync();
 
