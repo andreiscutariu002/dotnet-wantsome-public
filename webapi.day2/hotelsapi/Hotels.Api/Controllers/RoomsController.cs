@@ -43,7 +43,7 @@
             {
                 this.logger.LogInfo("DistributedCachedRoomsController-Get(hotelId) cache hit");
 
-                var roomsList = this.Deserialize<List<RoomResource>>(rooms);
+                var roomsList = Deserialize<List<RoomResource>>(rooms);
 
                 return roomsList;
             }
@@ -60,18 +60,18 @@
                 options.SetAbsoluteExpiration(TimeSpan.FromSeconds(3));
                 
                 var resources = roomsEntities.Select(e => e.MapAsResource());
-                this.cache.SetString(key, this.Serialize(resources), options);
+                this.cache.SetString(key, Serialize(resources), options);
 
                 return resources;
             }
         }
 
-        private string Serialize(object obj)
+        private static string Serialize(object obj)
         {
             return JsonConvert.SerializeObject(obj);
         }
 
-        private T Deserialize<T>(string serialized)
+        private static T Deserialize<T>(string serialized)
         {
             return JsonConvert.DeserializeObject<T>(serialized);
         }
