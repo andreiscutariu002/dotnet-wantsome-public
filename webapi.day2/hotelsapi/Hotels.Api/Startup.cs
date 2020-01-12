@@ -1,10 +1,8 @@
 namespace Hotels.Api
 {
-    using System;
     using Data;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
-    using Microsoft.AspNetCore.Http;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
@@ -36,24 +34,6 @@ namespace Hotels.Api
             });
 
             services.AddScoped<ISimpleLogger, SimpleLogger>();
-
-            services.AddResponseCaching();
-            
-            services.AddMemoryCache();
-
-            //add redis cache
-            //services.AddDistributedRedisCache(option =>
-            //{
-            //    option.Configuration = "127.0.0.1";
-            //    option.InstanceName = "master";
-            //});
-
-            services.AddDistributedSqlServerCache(options =>
-            {
-                options.ConnectionString = "Data Source=.;Initial Catalog=DistCache;Integrated Security=True;";
-                options.SchemaName = "dbo";
-                options.TableName = "TestCache";
-            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -72,22 +52,6 @@ namespace Hotels.Api
             {
                 app.UseExceptionHandler("/error");
             }
-
-            app.UseResponseCaching();
-
-            //register cache global 
-            //app.Use(async (context, next) =>
-            //{
-            //    context.Response.GetTypedHeaders().CacheControl =
-            //        new Microsoft.Net.Http.Headers.CacheControlHeaderValue()
-            //        {
-            //            Public = true,
-            //            MaxAge = TimeSpan.FromSeconds(120)
-            //        };
-            //    context.Response.Headers[Microsoft.Net.Http.Headers.HeaderNames.Vary] =  new string[] { "Accept-Encoding" };
-
-            //    await next();
-            //});
 
             app.UseRouting();
 

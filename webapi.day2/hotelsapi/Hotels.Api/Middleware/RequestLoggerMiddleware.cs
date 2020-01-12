@@ -21,7 +21,7 @@ namespace Hotels.Api.Middleware
 
             await this.next.Invoke(context);
 
-            simpleLogger.LogInfo($"Finished handling request. Milliseconds: {(DateTime.Now - date).Milliseconds}");
+            simpleLogger.LogInfo($"Finished handling request. Milliseconds: {(DateTime.Now - date).TotalMilliseconds}");
         }
     }
 }

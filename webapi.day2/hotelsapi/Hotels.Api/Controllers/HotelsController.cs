@@ -20,18 +20,14 @@
     {
         private readonly ApiDbContext context;
         private readonly ISimpleLogger logger;
-        private readonly IMemoryCache memoryCache;
 
-        public HotelsController(ApiDbContext context, ISimpleLogger logger, IMemoryCache memoryCache)
+        public HotelsController(ApiDbContext context, ISimpleLogger logger)
         {
             this.context = context;
             this.logger = logger;
-            this.memoryCache = memoryCache;
         }
 
         [HttpGet("{id}")]
-        [ResponseCache(VaryByQueryKeys = new[] { "id" }, Duration = 30)]
-        //[ResponseCache(VaryByQueryKeys = new[] { "*" }, Duration = 30)]
         public async Task<ActionResult<HotelResource>> Get(int id)
         {
             if (id < 0)
@@ -57,9 +53,6 @@
             this.context.Hotels.Add(entity);
 
             await this.context.SaveChangesAsync();
-
-            var cts = new CancellationTokenSource();
-            this.memoryCache.Set($"_CTS{entity.Id}", cts);
 
             return this.CreatedAtAction("Get", new {id = entity.Id}, entity.MapAsModel());
         }
@@ -97,20 +90,8 @@
 
             this.context.Hotels.Remove(hotel);
             await this.context.SaveChangesAsync();
-
-            var cts = this.memoryCache.Get<CancellationTokenSource>($"_CTS{id}");
-            cts.Cancel();
-
+            
             return hotel;
-        }
-
-        [HttpDelete("{id}/remove-cache")]
-        public ActionResult<Hotel> RemoveCache(int id)
-        {
-            var cts = this.memoryCache.Get<CancellationTokenSource>($"_CTS{id}");
-            cts.Cancel();
-
-            return this.Ok();
         }
     }
 }
