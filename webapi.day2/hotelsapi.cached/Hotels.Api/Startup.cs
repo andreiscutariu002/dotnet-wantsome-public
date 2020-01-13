@@ -42,18 +42,18 @@ namespace Hotels.Api
             services.AddMemoryCache();
 
             //add redis cache
-            //services.AddDistributedRedisCache(option =>
-            //{
-            //    option.Configuration = "127.0.0.1";
-            //    option.InstanceName = "master";
-            //});
-
-            services.AddDistributedSqlServerCache(options =>
+            services.AddDistributedRedisCache(option =>
             {
-                options.ConnectionString = "Data Source=.;Initial Catalog=DistCache;Integrated Security=True;";
-                options.SchemaName = "dbo";
-                options.TableName = "TestCache";
+                option.Configuration = "127.0.0.1";
+                option.InstanceName = "master";
             });
+
+            //services.AddDistributedSqlServerCache(options =>
+            //{
+            //    options.ConnectionString = "Data Source=.;Initial Catalog=DistCache;Integrated Security=True;";
+            //    options.SchemaName = "dbo";
+            //    options.TableName = "TestCache";
+            //});
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

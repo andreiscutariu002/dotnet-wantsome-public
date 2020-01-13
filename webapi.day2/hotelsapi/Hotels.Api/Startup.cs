@@ -33,6 +33,10 @@ namespace Hotels.Api
             });
 
             services.AddScoped<ISimpleLogger, SimpleLogger>();
+
+            services.AddResponseCaching();
+
+            services.AddMemoryCache();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -51,6 +55,8 @@ namespace Hotels.Api
             {
                 app.UseExceptionHandler("/error");
             }
+
+            app.UseResponseCaching();
 
             app.UseRouting();
 
