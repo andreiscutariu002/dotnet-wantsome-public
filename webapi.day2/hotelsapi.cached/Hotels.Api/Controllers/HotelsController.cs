@@ -1,7 +1,6 @@
 ﻿namespace Hotels.Api.Controllers
 {
     using System;
-    using System.Collections.Generic;
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
@@ -30,8 +29,6 @@
         }
 
         [HttpGet("{id}")]
-        [ResponseCache(VaryByQueryKeys = new[] { "id" }, Duration = 30)]
-        //[ResponseCache(VaryByQueryKeys = new[] { "*" }, Duration = 30)]
         public async Task<ActionResult<HotelResource>> Get(int id)
         {
             if (id < 0)
@@ -99,18 +96,9 @@
             await this.context.SaveChangesAsync();
 
             var cts = this.memoryCache.Get<CancellationTokenSource>($"_CTS{id}");
-            cts.Cancel();
+            cts?.Cancel();
 
             return hotel;
-        }
-
-        [HttpDelete("{id}/remove-cache")]
-        public ActionResult<Hotel> RemoveCache(int id)
-        {
-            var cts = this.memoryCache.Get<CancellationTokenSource>($"_CTS{id}");
-            cts.Cancel();
-
-            return this.Ok();
         }
     }
 }

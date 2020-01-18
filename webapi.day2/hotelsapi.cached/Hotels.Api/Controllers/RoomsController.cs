@@ -6,76 +6,11 @@
     using System.Threading;
     using System.Threading.Tasks;
     using Data;
-    using Data.Entities;
     using Extensions.Map;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.EntityFrameworkCore;
-    using Microsoft.Extensions.Caching.Distributed;
-    using Microsoft.Extensions.Caching.Memory;
-    using Microsoft.Extensions.Primitives;
     using Models.Rooms;
-    using Newtonsoft.Json;
     using Services;
-
-    [Route("api/hotels/{hotelId}/dis-cached-rooms")]
-    [ApiController]
-    public class DistributedCachedRoomsController
-    {
-        private readonly ApiDbContext context;
-        private readonly IDistributedCache cache;
-        private readonly ISimpleLogger logger;
-
-        public DistributedCachedRoomsController(ApiDbContext context, IDistributedCache cache, ISimpleLogger logger)
-        {
-            this.context = context;
-            this.cache = cache;
-            this.logger = logger;
-        }
-
-        [HttpGet("")]
-        public async Task<IEnumerable<RoomResource>> Get(int hotelId, CancellationToken token)
-        {
-            var key = $"_rooms_for_hotel_{hotelId}";
-
-            var rooms = this.cache.GetString(key);
-
-            if (!string.IsNullOrEmpty(rooms))
-            {
-                this.logger.LogInfo("DistributedCachedRoomsController-Get(hotelId) cache hit");
-
-                var roomsList = Deserialize<List<RoomResource>>(rooms);
-
-                return roomsList;
-            }
-            else
-            {
-                this.logger.LogInfo("DistributedCachedRoomsController-Get(hotelId) db hit");
-
-                var roomsEntities = await this.context.Rooms
-                    .Include(h => h.Hotel)
-                    .Where(h => h.Hotel.Id == hotelId)
-                    .ToListAsync(token);
-
-                var options = new DistributedCacheEntryOptions();
-                options.SetAbsoluteExpiration(TimeSpan.FromSeconds(3));
-                
-                var resources = roomsEntities.Select(e => e.MapAsResource());
-                this.cache.SetString(key, Serialize(resources), options);
-
-                return resources;
-            }
-        }
-
-        private static string Serialize(object obj)
-        {
-            return JsonConvert.SerializeObject(obj);
-        }
-
-        private static T Deserialize<T>(string serialized)
-        {
-            return JsonConvert.DeserializeObject<T>(serialized);
-        }
-    }
 
     [Route("api/hotels/{hotelId}/rooms")]
     [ApiController]
@@ -83,41 +18,22 @@
     {
         private readonly ApiDbContext context;
         private readonly ISimpleLogger logger;
-        private readonly IMemoryCache memoryCache;
 
-        public RoomsController(ApiDbContext context, ISimpleLogger logger, IMemoryCache memoryCache)
+        public RoomsController(ApiDbContext context, ISimpleLogger logger)
         {
             this.context = context;
             this.logger = logger;
-            this.memoryCache = memoryCache;
         }
 
         [HttpGet("")]
         public async Task<IEnumerable<RoomResource>> Get(int hotelId, CancellationToken token)
         {
-            var key = $"_rooms_for_hotel_{hotelId}";
+            var rooms = await this.context.Rooms
+                .Include(h => h.Hotel)
+                .Where(h => h.Hotel.Id == hotelId)
+                .ToListAsync(token);
 
-            var list = await this.memoryCache.GetOrCreateAsync(key, entry =>
-            {
-                var cacheTokenSource = this.memoryCache.GetOrCreate($"_CTS{hotelId}", cacheEntry => new CancellationTokenSource());
-
-                entry.AddExpirationToken(new CancellationChangeToken(cacheTokenSource.Token));
-                entry.RegisterPostEvictionCallback(this.Callback, this);
-
-                this.logger.LogInfo("RoomsController-Get(hotelId) db hit");
-
-                return this.context.Rooms
-                    .Include(h => h.Hotel)
-                    .Where(h => h.Hotel.Id == hotelId)
-                    .ToListAsync(token);
-            });
-
-            return list.Select(e => e.MapAsResource());
-        }
-
-        private void Callback(object key, object value, EvictionReason reason, object state)
-        {
-            this.logger.LogInfo($"RoomsController-Get(hotelId) cache reset: {reason} on key: {key}");
+            return rooms.Select(x=>x.MapAsResource());
         }
 
         [HttpGet("{id}")]
