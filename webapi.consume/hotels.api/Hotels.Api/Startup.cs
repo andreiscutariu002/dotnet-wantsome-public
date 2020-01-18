@@ -5,6 +5,8 @@ namespace Hotels.Api
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.AspNetCore.Http;
+    using Microsoft.AspNetCore.Mvc;
+    using Microsoft.AspNetCore.Mvc.Formatters;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
@@ -24,7 +26,24 @@ namespace Hotels.Api
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
-        {   
+        {
+            services.AddMvc(options =>
+                {
+                    // Return a 406 when an unsupported media type was requested
+                    options.ReturnHttpNotAcceptable = true;
+
+                    // Add XML formatters
+                    options.OutputFormatters.Add(new XmlSerializerOutputFormatter());
+                    options.InputFormatters.Add(new XmlSerializerInputFormatter(options));
+
+                    // Set XML as default format instead of JSON - the first formatter in the 
+                    // list is the default, so we insert the input/output formatters at 
+                    // position 0
+                    //options.OutputFormatters.Insert(0, new XmlSerializerOutputFormatter());
+                    //options.InputFormatters.Insert(0, new XmlSerializerInputFormatter(options));
+                }
+            );
+
             services.AddDbContext<ApiDbContext>(options =>
                 options.UseSqlServer(this.Configuration.GetConnectionString("DefaultConnection")));
 

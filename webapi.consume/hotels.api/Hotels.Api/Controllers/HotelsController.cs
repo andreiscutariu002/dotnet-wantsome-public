@@ -44,11 +44,11 @@
 
             this.logger.LogInfo("HotelsController-Get(id) hit");
 
-            return entity.MapAsModel();
+            return entity.MapAsResource();
         }
 
         [HttpPost]
-        public async Task<ActionResult<Hotel>> Post(CreateHotelResource model)
+        public async Task<ActionResult<HotelResource>> Post(CreateHotelResource model)
         {
             var entity = model.MapAsNewEntity();
             this.context.Hotels.Add(entity);
@@ -58,7 +58,7 @@
             var cts = new CancellationTokenSource();
             this.memoryCache.Set($"_CTS{entity.Id}", cts);
 
-            return this.CreatedAtAction("Get", new {id = entity.Id}, entity.MapAsModel());
+            return this.CreatedAtAction("Get", new {id = entity.Id}, entity.MapAsResource());
         }
 
         [HttpPut("{id}")]
@@ -78,7 +78,7 @@
         }
 
         [HttpDelete("{id}")]
-        public async Task<ActionResult<Hotel>> Delete(int id)
+        public async Task<ActionResult<HotelResource>> Delete(int id)
         {
             var hotel = await this.context.Hotels.FindAsync(id);
             if (hotel == null)
@@ -98,7 +98,7 @@
             var cts = this.memoryCache.Get<CancellationTokenSource>($"_CTS{id}");
             cts?.Cancel();
 
-            return hotel;
+            return hotel.MapAsResource();
         }
     }
 }

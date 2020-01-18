@@ -14,7 +14,7 @@
             };
         }
 
-        public static HotelResource MapAsModel(this Hotel model)
+        public static HotelResource MapAsResource(this Hotel model)
         {
             return new HotelResource
             {
