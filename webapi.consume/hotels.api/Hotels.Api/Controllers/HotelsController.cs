@@ -7,6 +7,7 @@
     using Data;
     using Data.Entities;
     using Extensions.Map;
+    using Microsoft.AspNetCore.JsonPatch;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Caching.Memory;
@@ -61,8 +62,39 @@
             return this.CreatedAtAction("Get", new {id = entity.Id}, entity.MapAsResource());
         }
 
+        [HttpPatch("{id}")]
+        public async Task<IActionResult> Patch(int id, JsonPatchDocument<UpdateHotelResource> pathPatchDocument)
+        {
+            //https://docs.microsoft.com/en-us/aspnet/core/web-api/jsonpatch?view=aspnetcore-3.1
+
+            var entity = await this.context.Hotels.FindAsync(id);
+            if (entity == null)
+            {
+                return this.NotFound();
+            }
+
+            var existing = new UpdateHotelResource
+            {
+                City = entity.City
+                // imagine that we have a lot of props/info here
+            };
+
+            pathPatchDocument.ApplyTo(existing, this.ModelState);
+
+            if (!this.ModelState.IsValid)
+            {
+                return this.BadRequest(this.ModelState);
+            }
+
+            entity.UpdateWith(existing);
+            this.context.Hotels.Update(entity);
+            await this.context.SaveChangesAsync();
+
+            return this.NoContent();
+        }
+
         [HttpPut("{id}")]
-        public async Task<IActionResult> Put(long id, UpdateHotelResource model)
+        public async Task<IActionResult> Put(int id, UpdateHotelResource model)
         {
             var entity = await this.context.Hotels.FindAsync(id);
             if (entity == null)

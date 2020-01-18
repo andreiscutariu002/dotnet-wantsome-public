@@ -1,6 +1,7 @@
 namespace Hotels.Api
 {
     using System;
+    using System.Linq;
     using Data;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
@@ -11,6 +12,7 @@ namespace Hotels.Api
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Hosting;
+    using Microsoft.Extensions.Options;
     using Microsoft.OpenApi.Models;
     using Middleware;
     using Services;
@@ -36,6 +38,8 @@ namespace Hotels.Api
                     options.OutputFormatters.Add(new XmlSerializerOutputFormatter());
                     options.InputFormatters.Add(new XmlSerializerInputFormatter(options));
 
+                    options.InputFormatters.Insert(0, GetJsonPatchInputFormatter());
+
                     // Set XML as default format instead of JSON - the first formatter in the 
                     // list is the default, so we insert the input/output formatters at 
                     // position 0
@@ -47,7 +51,7 @@ namespace Hotels.Api
             services.AddDbContext<ApiDbContext>(options =>
                 options.UseSqlServer(this.Configuration.GetConnectionString("DefaultConnection")));
 
-            services.AddControllers();
+            services.AddControllers().AddNewtonsoftJson();
 
             services.AddSwaggerGen(c =>
             {
@@ -73,6 +77,22 @@ namespace Hotels.Api
                 options.SchemaName = "dbo";
                 options.TableName = "TestCache";
             });
+        }
+
+        private static NewtonsoftJsonPatchInputFormatter GetJsonPatchInputFormatter()
+        {
+            var builder = new ServiceCollection()
+                .AddLogging()
+                .AddMvc()
+                .AddNewtonsoftJson()
+                .Services.BuildServiceProvider();
+
+            return builder
+                .GetRequiredService<IOptions<MvcOptions>>()
+                .Value
+                .InputFormatters
+                .OfType<NewtonsoftJsonPatchInputFormatter>()
+                .First();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
