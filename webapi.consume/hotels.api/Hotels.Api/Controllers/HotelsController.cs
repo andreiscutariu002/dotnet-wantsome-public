@@ -132,5 +132,25 @@
 
             return hotel.MapAsResource();
         }
+
+        [HttpPost("long-running")]
+        public async Task<ActionResult> LongRunningCall(CancellationToken token)
+        {
+            while (true)
+            {
+                if (token.IsCancellationRequested)
+                {
+                    break;
+                }
+
+                await Task.Delay(TimeSpan.FromSeconds(1));
+
+                this.logger.LogInfo("Operation running ...");
+            }
+
+            this.logger.LogInfo("Cancellation Requested");
+
+            return this.Ok();
+        }
     }
 }

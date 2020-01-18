@@ -10,11 +10,11 @@
     using Newtonsoft.Json;
     using Resources.HotelsApiConsumer.Resources;
 
-    internal class HotelsApiClient
+    internal class HotelsApiClientV1
     {
         private readonly HttpClient client;
 
-        public HotelsApiClient(HttpClient client)
+        public HotelsApiClientV1(HttpClient client)
         {
             this.client = client;
 
