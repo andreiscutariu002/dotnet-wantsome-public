@@ -6,6 +6,9 @@ using System.ServiceModel;
 public interface IService
 {
     [OperationContract]
+    string SimpleMethod();
+
+    [OperationContract]
     string GetData(int value);
 
     [OperationContract]

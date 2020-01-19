@@ -2,6 +2,11 @@
 
 public class Service : IService
 {
+    public string SimpleMethod()
+    {
+        return string.Format("Demo");
+    }
+
     public string GetData(int value)
     {
         return string.Format("You entered: {0}", value);

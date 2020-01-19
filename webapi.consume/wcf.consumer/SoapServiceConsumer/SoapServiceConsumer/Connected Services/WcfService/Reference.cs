@@ -54,6 +54,9 @@ namespace WcfService
     public interface IService
     {
         
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IService/SimpleMethod", ReplyAction="http://tempuri.org/IService/SimpleMethodResponse")]
+        System.Threading.Tasks.Task<string> SimpleMethodAsync();
+        
         [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IService/GetData", ReplyAction="http://tempuri.org/IService/GetDataResponse")]
         System.Threading.Tasks.Task<string> GetDataAsync(int value);
         
@@ -109,6 +112,11 @@ namespace WcfService
         public ServiceClient(System.ServiceModel.Channels.Binding binding, System.ServiceModel.EndpointAddress remoteAddress) : 
                 base(binding, remoteAddress)
         {
+        }
+        
+        public System.Threading.Tasks.Task<string> SimpleMethodAsync()
+        {
+            return base.Channel.SimpleMethodAsync();
         }
         
         public System.Threading.Tasks.Task<string> GetDataAsync(int value)
