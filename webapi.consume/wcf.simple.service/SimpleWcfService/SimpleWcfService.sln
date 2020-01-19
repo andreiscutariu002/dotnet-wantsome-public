@@ -1,0 +1,42 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29519.181
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "SimpleWcfService", "SimpleWcfService\", "{48C8C757-7F7E-41AA-A01B-44F7F43E35F5}"
+	ProjectSection(WebsiteProperties) = preProject
+		TargetFrameworkMoniker = ".NETFramework,Version%3Dv4.7.2"
+		Debug.AspNetCompiler.VirtualPath = "/localhost_56882"
+		Debug.AspNetCompiler.PhysicalPath = "SimpleWcfService\"
+		Debug.AspNetCompiler.TargetPath = "PrecompiledWeb\localhost_56882\"
+		Debug.AspNetCompiler.Updateable = "true"
+		Debug.AspNetCompiler.ForceOverwrite = "true"
+		Debug.AspNetCompiler.FixedNames = "false"
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.VirtualPath = "/localhost_56882"
+		Release.AspNetCompiler.PhysicalPath = "SimpleWcfService\"
+		Release.AspNetCompiler.TargetPath = "PrecompiledWeb\localhost_56882\"
+		Release.AspNetCompiler.Updateable = "true"
+		Release.AspNetCompiler.ForceOverwrite = "true"
+		Release.AspNetCompiler.FixedNames = "false"
+		Release.AspNetCompiler.Debug = "False"
+		VWDPort = "56882"
+		SlnRelativePath = "SimpleWcfService\"
+		DefaultWebSiteLanguage = "Visual C#"
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{48C8C757-7F7E-41AA-A01B-44F7F43E35F5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{48C8C757-7F7E-41AA-A01B-44F7F43E35F5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {F024CEEB-2026-4AD7-9611-83FA70D0FAE5}
+	EndGlobalSection
+EndGlobal
