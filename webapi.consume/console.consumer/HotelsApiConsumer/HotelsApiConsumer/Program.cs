@@ -9,7 +9,7 @@
 
     internal class Program
     {
-        private static readonly HttpClient Client = new HttpClient();
+        private static readonly HttpClient HttpClient = new HttpClient();
 
         private static void Main(string[] args)
         {
@@ -18,7 +18,7 @@
 
         private static async Task RunAsync()
         {
-            var client = new HotelsApiClientV1(Client);
+            var client = new HotelsApiClientV1(HttpClient);
 
             var hotel = new CreateHotelResource
             {
@@ -43,7 +43,7 @@
 
         private static async Task RunAsync2()
         {
-            var client = new HotelsApiClientV2(Client);
+            var client = new HotelsApiClientV2(HttpClient);
 
             var hotel = await client.GetHotel(27);
 
@@ -52,7 +52,7 @@
 
         private static async Task RunAsync3()
         {
-            var client = new HotelsApiClientV2(Client);
+            var client = new HotelsApiClientV2(HttpClient);
 
             var cancellationTokenSource = new CancellationTokenSource();
             cancellationTokenSource.CancelAfter(TimeSpan.FromSeconds(5));
