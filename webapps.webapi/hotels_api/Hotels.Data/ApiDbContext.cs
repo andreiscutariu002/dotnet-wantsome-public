@@ -2,6 +2,7 @@
 {
     using Entities;
     using Microsoft.EntityFrameworkCore;
+    using System.Collections.Generic;
 
     public class ApiDbContext : DbContext
     {
