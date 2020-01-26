@@ -6,6 +6,7 @@
     using System.Threading.Tasks;
     using Data;
     using Extensions.Map;
+    using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Caching.Memory;
@@ -15,6 +16,7 @@
 
     [Route("api/hotels/{hotelId}/cached-rooms")]
     [ApiController]
+    [Authorize]
     public class RoomsMemCachedController : ControllerBase
     {
         private readonly ApiDbContext context;

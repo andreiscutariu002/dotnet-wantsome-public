@@ -1,6 +1,7 @@
 namespace Hotels.Api
 {
     using System;
+    using System.Collections.Generic;
     using Data;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
@@ -24,7 +25,7 @@ namespace Hotels.Api
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
-        {   
+        {
             //services.AddDbContext<ApiDbContext>(options => options.UseSqlServer(this.Configuration.GetConnectionString("DefaultConnection")));
 
             services.AddDbContext<ApiDbContext>(options => options.UseInMemoryDatabase("hotels"));
@@ -33,14 +34,51 @@ namespace Hotels.Api
 
             services.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc("v1", new OpenApiInfo {Title = "Hotels API", Version = "v1"});
+                c.SwaggerDoc("v1", new OpenApiInfo { Title = "Hotels API", Version = "v1" });
+
+                c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+                {
+                    Description = "JWT Authorization header using the Bearer scheme. Example: \"Authorization: Bearer {token}\"",
+                    Name = "Authorization",
+                    In = ParameterLocation.Header,
+                    Type = SecuritySchemeType.ApiKey,
+                    Scheme = "Bearer"
+                });
+
+                c.AddSecurityRequirement(new OpenApiSecurityRequirement()
+                {
+                    {
+                        new OpenApiSecurityScheme
+                        {
+                            Reference = new OpenApiReference
+                            {
+                                Type = ReferenceType.SecurityScheme,
+                                Id = "Bearer"
+                            },
+                            Scheme = "oauth2",
+                            Name = "Bearer",
+                            In = ParameterLocation.Header,
+
+                        },
+                        new List<string>()
+                    }
+                });
             });
 
             services.AddScoped<ISimpleLogger, SimpleLogger>();
 
             services.AddResponseCaching();
-            
+
             services.AddMemoryCache();
+
+            services.AddAuthentication("Bearer")
+                .AddJwtBearer("Bearer", options =>
+                {
+                    options.Authority = "http://localhost:5000";
+                    options.RequireHttpsMetadata = false;
+
+                    options.Audience = "hotelsapi";
+                });
 
             ////add redis cache
             //services.AddDistributedRedisCache(option =>
@@ -92,8 +130,10 @@ namespace Hotels.Api
 
             app.UseRouting();
 
-            app.UseMiddleware<RequestLoggerMiddleware>();
+            app.UseAuthentication();
+            app.UseAuthorization();
 
+            app.UseMiddleware<RequestLoggerMiddleware>();
             app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
         }
     }
