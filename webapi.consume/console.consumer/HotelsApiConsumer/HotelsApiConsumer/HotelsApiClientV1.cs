@@ -46,7 +46,7 @@
         {
             var doc = new JsonPatchDocument<UpdateHotelResource>();
 
-            //doc.Replace(u => u.City, "Other city name");
+            doc.Replace(u => u.City, "Other city name");
 
             doc.Remove(u => u.City);
 
