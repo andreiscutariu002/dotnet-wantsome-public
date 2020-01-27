@@ -79,13 +79,14 @@ namespace Hotels.Api
                     options.Audience = "hotelsapi";
                 });
 
-            ////add redis cache
+            //// Redis Cache
             //services.AddDistributedRedisCache(option =>
             //{
             //    option.Configuration = "127.0.0.1";
             //    option.InstanceName = "master";
             //});
 
+            //// SQL Server cache
             //services.AddDistributedSqlServerCache(options =>
             //{
             //    options.ConnectionString = "Data Source=.;Initial Catalog=DistCache;Integrated Security=True;";
