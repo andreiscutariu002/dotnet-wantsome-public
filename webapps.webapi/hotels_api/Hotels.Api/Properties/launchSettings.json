@@ -4,7 +4,7 @@
     "anonymousAuthentication": true,
     "launchUrl": "swagger",
     "iisExpress": {
-      "applicationUrl": "http://localhost:5002"
+      "applicationUrl": "http://localhost:5003"
     }
   },
   "profiles": {
@@ -23,7 +23,7 @@
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       },
-      "applicationUrl": "http://localhost:5002"
+      "applicationUrl": "http://localhost:5003"
     }
   }
 }
