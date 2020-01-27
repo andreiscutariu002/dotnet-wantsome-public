@@ -1,13 +1,13 @@
-﻿using IdentityModel.Client;
-using System;
-using System.Net.Http;
-using System.Threading.Tasks;
-
-namespace TokenGenerator
+﻿namespace TokenGenerator
 {
-    class Program
+    using System;
+    using System.Net.Http;
+    using System.Threading.Tasks;
+    using IdentityModel.Client;
+
+    internal class Program
     {
-        static void Main(string[] args)
+        private static void Main(string[] args)
         {
             GetToken().Wait();
         }
