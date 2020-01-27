@@ -58,7 +58,6 @@ namespace Hotels.Api
                             Scheme = "oauth2",
                             Name = "Bearer",
                             In = ParameterLocation.Header,
-
                         },
                         new List<string>()
                     }
