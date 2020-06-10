@@ -1,0 +1,100 @@
+# Threading and async programming - Concepts (15m)
+
+## Synchronous vs Asynchronous 
+
+* Synchronous
+    * Sequential execution of code statements.
+    * If a blocking operation occurs, the whole process is blocked.
+    * If a long-running operation occurs, the UI becomes unresponsive.
+    * CPU-demanding tasks delay the execution of all other tasks.
+    * Accessing external resources blocks the entire process (reading files from the HDD, querying a web service, et
+
+* Asynchronous 
+    * In general, asynchronous (from Greek asyn-, meaning "not with," and chronos, meaning "time") is an adjective describing objects or events that are not coordinated in time.
+    * In computer programs, asynchronous operation means that a process operates independently of other processes.
+    * A program using asynchronous programming, dispatches tasks to devices that can take care of themselves, leaving the program free to do something else until it receives a signal that the work is completed.
+
+    ![](https://camo.githubusercontent.com/a05fd290b0ad342a6721ca3fc66d7ed65c004fa4/68747470733a2f2f63646e2d696d616765732d312e6d656469756d2e636f6d2f6d61782f313630302f312a36306975674742484d46375050536e2d6664517248512e706e67)
+
+## Parallel vs Concurrent 
+
+* Parallel execution
+    * In parallel computing, a computational task is typically broken down in several, often many, very similar subtasks that can be processed independently and whose results are combined afterwards, upon completion.
+    * The tasks advance simultaneously - that is literally at the same time.
+* Concurrent execution
+    * Concurrent computing is a form of computing in which several computations are executed during overlapping time periods concurrently instead of sequentially.
+    * There is a separate execution point or "thread of control" for each computation ("process").
+    * A concurrent system is one where a computation can advance without waiting for all other computations to complete; where more than one computation can advance at the "same time".
+
+* Concurrency vs. Parallelism
+    * Concurrency is about dealing with lots of things at once.
+    * Parallelism is about doing lots of things at once.
+    * Not the same concepts, but related.
+    * One is about structure, the other is about execution.
+
+    ![](https://www.dietergalea.com/images/parallel_sequential_concurrent.jpg)
+
+## Threads vs Processes
+
+* Process
+
+    * In terms of computing - a process is an instance of a computer program that is being executed.
+    * It contains the program code and its current activity (state).
+    * Depending on the OS, a process may be made up of multiple threads of execution, that execute instructions concurrently.
+    * Each process provides the resources needed to execute a program.
+    * Each process is started with a single thread of execution, often called the primary thread, and can create additional threads from any of its threads.
+
+* Thread
+
+    * A thread is an entity within a process that can be scheduled for execution.
+    * All threads of a process share its virtual address space and system resources.
+    * Each thread maintains exception handlers, a scheduling priority, thread local storage, a unique thread identifier, and a set of structures the system will use to save the thread context until it is scheduled.
+
+    ![](https://www.backblaze.com/blog/wp-content/uploads/2017/08/diagram-thread-process-1.png)
+
+## Multithreading vs. Multitasking
+
+* Multitasking
+
+    - **Multitasking** is the **ability of an OS** to run **several tasks**(processes) at the "**same time**".  
+    - Switching between the tasks is so fast that the user can interact fully with the system, **without having to wait for one task to be completely finished** (at least he does not feel like waiting, in practice - he is waiting a couple milliseconds).
+    - <a href="https://en.wikipedia.org/wiki/Computer_multitasking">_**Multitasking**_</a> is a concept of **performing multiple tasks** (processes) over a certain **period of time** by executing them in a **parallel** manner or **concurrently**.  
+    - Multitasking does not necessarily mean that multiple tasks are executing at exactly the same time. **Multitasking does not imply parallel execution**, but it does mean that more than one task can be **part-way** through execution at the same time, and that **more than one task** is **advancing** over a given period of time.
+
+* Multithreading
+   - Multithreading **extends the idea of multitasking** into applications, so you can **subdivide specific operations** within a **single application** into individual threads. Each of the threads can run in **parallel** or/and **concurrently**. The OS **divides processing time** not only among **different applications**, but also among **each thread** within an application.
+   - **Multithreading** is the **ability of an OS** to execute **different parts of a program**, called threads, **in parallel** and/or **concurrently**.  
+    - Multithreading usually involves sophisticated programs that use multiple CPUs at the same time to **improve performance and responsiveness**.   
+
+## Context switching
+
+* In computing, a context switch is the process of storing and restoring the state (the execution context) of a process or a thread so that execution can be resumed from the same point at a later time.
+
+* This enables multiple processes to share a single CPU and is an essential feature of a multitasking operating system.
+
+* Context switching cost
+
+    * Context switches are usually computationally intensive, and much of the design of OS is to optimize the use of context switches.
+    * Switching from one process to another requires a certain amount of time for doing the administration - saving and loading registers and memory maps, updating various tables and lists, etc.
+    * Switching between threads of a single process can be faster than between two separate processes, because threads share the same virtual memory maps, so a TLB flush is not necessary.
+    * ![](https://raw.githubusercontent.com/moooofly/ImageCache/master/Pictures/Context_switch.png)
+    * ![](https://www.codeproject.com/KB/dotnet/1083787/Cost-Of-Context-Switching.png)
+
+## Multithreading use-cases
+
+* The benefits of leveraging multi-threading include: 
+    * opportunity to **scale** by parallelizing CPU-bound operations. 
+    * assuming that a multi-core/multi-processor hardware is used. 
+    * **perform** CPU-bound **work while** I/O operations are **waiting**. 
+    * **maintain a responsive user interface**. 
+    * farming off lengthy and/or blocking operations to a separate thread. 
+    * using thread priorities to ensure the UI thread has highest priority.
+
+* The price to pay for multi-threading includes:
+    * slower execution time on single-core/processor machines.
+    * context-switching overhead
+    * added program complexity
+    * more lines of code
+    * less readable/maintainable
+    * difficult to debug
+    * difficult to test

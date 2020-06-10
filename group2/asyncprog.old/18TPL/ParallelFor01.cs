@@ -1,0 +1,34 @@
+﻿namespace _18TPL
+{
+    using System;
+    using System.Threading;
+    using System.Threading.Tasks;
+
+    internal class ParallelFor01
+    {
+        internal static void Run()
+        {
+            Console.WriteLine("C# For Loop");
+            var number = 10;
+            for (var count = 0; count < number; count++)
+            {
+                //Thread.CurrentThread.ManagedThreadId returns an integer that 
+                //represents a unique identifier for the current managed thread.
+
+                Console.WriteLine($"value of count = {count}, thread = {Thread.CurrentThread.ManagedThreadId}");
+                //Sleep the loop for 10 miliseconds
+                Thread.Sleep(10);
+            }
+
+            Console.WriteLine();
+            Console.WriteLine("Parallel For Loop");
+            Parallel.For(0, number, count =>
+            {
+                Console.WriteLine($"value of count = {count}, thread = {Thread.CurrentThread.ManagedThreadId}");
+                //Sleep the loop for 10 miliseconds
+                Thread.Sleep(10);
+            });
+            Console.ReadLine();
+        }
+    }
+}
