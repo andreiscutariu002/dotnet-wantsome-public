@@ -5,9 +5,11 @@
     using System.IO;
     using System.Linq;
     using System.Threading;
+    using System.Threading.Tasks;
     using System.Windows.Forms;
     using DemoUI.Core;
 
+    // 1
     public partial class Form1 : Form
     {
         private const string Path =
@@ -18,18 +20,90 @@
             this.InitializeComponent();
         }
 
-        private void GetDataBtn_Click(object sender, EventArgs e)
+        private async void GetDataBtn_Click(object sender, EventArgs e)
+        {
+            this.Log("start to process file");  // main thread
+
+            try
+            {
+                var task = this.ReadCarsAsync(); // main thread -> worker thread
+                var cars = await task; // worker thread -> main thread
+
+                this.DisplayCars(cars); // -> main thread
+                this.Log($"finish to process file. {cars.Count()} cars downloaded"); // -> main thread
+                
+                Task<IList<Car>> task2 = this.ReadCarsAsync(); // main thread -> worker thread
+                var cars2 = await task2; // worker thread -> main thread
+
+                // main thread
+            }
+            catch (Exception ex)
+            {
+                this.Log($"error. {ex.Message}");
+            }
+        }
+
+        private void GetDataBtn_ClickOnTasks(object sender, EventArgs e)
         {
             this.Log("start to process file");
 
-            var cars = this.ProcessCarsFile(Path).ToList();
+            var uiScheduler = TaskScheduler.FromCurrentSynchronizationContext();
 
-            this.DisplayCars(cars);
+            //2
+            Task<IList<Car>> task = new Task<IList<Car>>(() =>
+            {
+                var cars = this.ProcessCarsFile(Path).ToList();
+                return cars;
+            });
 
-            this.Log($"finish to process file. {cars.Count()} cars downloaded");
+            task.ContinueWith(prev =>
+            {
+                this.DisplayCars(prev.Result);
+                this.Log($"finish to process file. {prev.Result.Count()} cars downloaded");
+            }, CancellationToken.None, TaskContinuationOptions.NotOnFaulted, uiScheduler);
+
+            task.ContinueWith(prev =>
+            {
+                this.Log($"error. {prev.Exception}");
+            }, CancellationToken.None, TaskContinuationOptions.OnlyOnFaulted, uiScheduler);
+
+            task.Start();
         }
 
-        private void DisplayCars(List<Car> cars)
+        private Task<IList<Car>> ReadCarsAsync()
+        {
+            var task = new Task<IList<Car>>(() =>
+            {
+                var cars = this.ProcessCarsFile(Path).ToList();
+                return cars;
+            });
+            task.Start();
+            return task;
+        }
+
+        private void GetDataBtn_ClickOnThreads(object sender, EventArgs e)
+        {
+            this.Log("start to process file");
+
+            var cars = new List<Car>();
+
+            var thread = new Thread(() =>
+            {
+                cars = this.ProcessCarsFile(Path).ToList();
+
+                Action action = () =>
+                {
+                    this.DisplayCars(cars);
+
+                    this.Log($"finish to process file. {cars.Count()} cars downloaded");
+                };
+
+                this.Invoke(action);
+            });
+            thread.Start();
+        }
+
+        private void DisplayCars(IList<Car> cars)
         {
             foreach (var car in cars)
             {
