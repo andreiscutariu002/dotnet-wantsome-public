@@ -1,0 +1,25 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>netcoreapp3.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="DevIntersection_Vegas_2017.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="DevIntersection_Vegas_2017.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\ConferencePlanner.Data\ConferencePlanner.Data.csproj" />
+    <ProjectReference Include="..\ConferencePlanner.Entities\ConferencePlanner.Entities.csproj" />
+  </ItemGroup>
+
+</Project>
