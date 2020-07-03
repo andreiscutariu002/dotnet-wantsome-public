@@ -23,7 +23,7 @@
         [HttpGet("{roomId}")]
         public async Task<ActionResult<RoomResource>> GetRoom(int id, long roomId)
         {
-            var hotel = await this.context.Hotels.FindAsync(id);
+            var hotel = await this.context.Hotels.Include(x => x.Rooms).FirstAsync(x => x.Id == id);
             var room = hotel.Rooms.FirstOrDefault(x => x.Id == roomId);
 
             if (room == null)
@@ -44,24 +44,15 @@
         {
             var hotel = await this.context.Hotels.FindAsync(id);
 
-            if (hotel.Rooms == null)
-            {
-                hotel.Rooms = new List<Room>();
-            }
+            var roomEntity = room.MapToEntity();
 
-            hotel.Rooms.Add(new Room
-            {
-                Id = room.Id,
-                Name = room.Name,
-                Number = room.Number,
-                HotelId = id
-            });
-
-            this.context.Entry(hotel).State = EntityState.Modified;
+            roomEntity.Hotel = hotel;
             
+            this.context.Rooms.Add(roomEntity);
+
             await this.context.SaveChangesAsync();
 
-            return CreatedAtAction("GetRoom", new { id = hotel.Id, roomId = room.Id }, room);
+            return this.CreatedAtAction("GetRoom", new { id = hotel.Id, roomId = room.Id }, roomEntity.MapToResource());
         }
     }
 }

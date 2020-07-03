@@ -8,6 +8,7 @@ namespace Hotels.Api
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Hosting;
     using Microsoft.OpenApi.Models;
+    using Services;
 
     public class Startup
     {
@@ -32,12 +33,21 @@ namespace Hotels.Api
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "Hotels API", Version = "v1" });
             });
+
+            services.AddTransient<INotificationService, NotificationService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            if (env.IsDevelopment()) app.UseDeveloperExceptionPage();
+            if (env.IsDevelopment())
+            {
+                app.UseExceptionHandler("/error-local-development");
+            }
+            else
+            {
+                app.UseExceptionHandler("/error");
+            }
 
             app.UseRouting();
             

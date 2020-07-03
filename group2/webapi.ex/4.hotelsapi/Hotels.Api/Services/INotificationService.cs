@@ -10,19 +10,19 @@
 
     public class NotificationService : INotificationService
     {
-        private readonly Guid id;
+        private readonly Guid instanceId;
         private readonly ILogger<NotificationService> logger;
 
         public NotificationService(ILoggerFactory factory)
         {
             this.logger = factory.CreateLogger<NotificationService>();
 
-            this.id = Guid.NewGuid();
+            this.instanceId = Guid.NewGuid();
         }
 
         public void Notify(string message)
         {
-            this.logger.LogInformation($"{this.id} : {message}");
+            this.logger.LogWarning($"{this.instanceId} : {message}");
         }
     }
 }

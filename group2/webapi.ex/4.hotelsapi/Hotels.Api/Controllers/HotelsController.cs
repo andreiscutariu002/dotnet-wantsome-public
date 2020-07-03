@@ -9,16 +9,19 @@
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.EntityFrameworkCore;
     using Resources;
+    using Services;
 
     [Route("api/hotels")]
     [ApiController]
     public class HotelsController : ControllerBase
     {
         private readonly ApiDbContext context;
+        private readonly INotificationService notificationService;
 
-        public HotelsController(ApiDbContext context)
+        public HotelsController(ApiDbContext context, INotificationService notificationService)
         {
             this.context = context;
+            this.notificationService = notificationService;
         }
 
         // GET: api/Hotels
@@ -80,6 +83,8 @@
             this.context.Hotels.Add(entity);
 
             await this.context.SaveChangesAsync();
+
+            this.notificationService.Notify("message");
 
             return this.CreatedAtAction("GetHotel", new { id = hotel.Id }, entity.MapToResource());
         }
