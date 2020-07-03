@@ -12,7 +12,5 @@ namespace Hotels.Api.Data.Entities
         public string Name { get; set; }
 
         public string City { get; set; }
-
-        public List<Room> Rooms { get; set; }
     }
 }
