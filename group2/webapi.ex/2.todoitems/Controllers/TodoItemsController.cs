@@ -10,24 +10,6 @@
     using Microsoft.EntityFrameworkCore;
     using Models;
 
-    [ApiController]
-    [ApiExplorerSettings(IgnoreApi = true)]
-    public class ErrorController : ControllerBase
-    {
-        [Route("/error")]
-        public IActionResult Error() => this.Problem();
-
-        [Route("/error-dev")]
-        public IActionResult ErrorDev()
-        {
-            var context = this.HttpContext.Features.Get<IExceptionHandlerFeature>();
-
-            return this.Problem(
-                detail: context.Error.StackTrace,
-                title: context.Error.Message);
-        }
-    }
-    
     [Route("api/todoitems")]
     [ApiController]
     public class TodoItemsController : ControllerBase
