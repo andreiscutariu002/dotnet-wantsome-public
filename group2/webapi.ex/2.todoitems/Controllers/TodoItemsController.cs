@@ -3,22 +3,30 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Threading;
     using System.Threading.Tasks;
     using Data;
     using Microsoft.AspNetCore.Diagnostics;
+    using Microsoft.AspNetCore.Hosting;
+    using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.EntityFrameworkCore;
     using Models;
+    using Services;
 
     [Route("api/todoitems")]
     [ApiController]
     public class TodoItemsController : ControllerBase
     {
         private readonly ApiDbContext context;
+        private readonly MailService mailService;
+        private readonly ILoggingService service;
 
-        public TodoItemsController(ApiDbContext context)
+        public TodoItemsController(ApiDbContext context, MailService mailService, ILoggingService service)
         {
             this.context = context;
+            this.mailService = mailService;
+            this.service = service;
         }
 
         // GET: api/TodoItems
@@ -28,9 +36,15 @@
             return await this.context.TodoItems.ToListAsync();
         }
 
+        [HttpGet("search/{value}")]
+        public async Task<ActionResult<IEnumerable<TodoItem>>> GetTodoItems([FromRoute] string value, CancellationToken token)
+        {
+            return this.Ok(await this.context.TodoItems.Where(t=>t.Name.Contains(value)).ToListAsync(cancellationToken: token));
+        }
+
         // GET: api/TodoItems/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<TodoItem>> GetTodoItem(long id)
+        public async Task<ActionResult<TodoItem>> GetTodoItem([FromRoute] long id, [FromQuery] bool value, CancellationToken token)
         {
             var todoItem = await this.context.TodoItems.FindAsync(id);
 
@@ -39,14 +53,12 @@
                 return this.NotFound();
             }
 
-            return todoItem;
+            return this.Ok(todoItem);
         }
 
         // PUT: api/TodoItems/5
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for
-        // more details see https://aka.ms/RazorPagesCRUD.
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutTodoItem(long id, TodoItem todoItem)
+        public async Task<IActionResult> PutTodoItem([FromRoute] long id, [FromBody] TodoItem todoItem)
         {
             if (id < 0)
             {
@@ -73,13 +85,15 @@
         }
 
         // POST: api/TodoItems
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for
-        // more details see https://aka.ms/RazorPagesCRUD.
         [HttpPost]
-        public async Task<ActionResult<TodoItem>> PostTodoItem(TodoItem todoItem)
+        public async Task<ActionResult<TodoItem>> PostTodoItem([FromBody] TodoItem todoItem)
         {
             this.context.TodoItems.Add(todoItem);
             await this.context.SaveChangesAsync();
+
+            this.service.Log($"TODO ITEM created with id {todoItem.Id}");
+
+            this.mailService.SendMail("TODO ITEM created");
 
             return this.CreatedAtAction("GetTodoItem", new {id = todoItem.Id}, todoItem);
         }
@@ -98,12 +112,38 @@
             this.context.TodoItems.Remove(todoItem);
             await this.context.SaveChangesAsync();
 
-            return todoItem;
+            return this.Ok(todoItem);
         }
 
         private bool TodoItemExists(long id)
         {
             return this.context.TodoItems.Any(e => e.Id == id);
         }
+    }
+
+    [ApiController]
+    [ApiExplorerSettings(IgnoreApi = true)]
+    public class ErrorController : ControllerBase
+    {
+        [Route("/error-local-development")]
+        public IActionResult ErrorLocalDevelopment(
+            [FromServices] IWebHostEnvironment webHostEnvironment)
+        {
+            if (webHostEnvironment.EnvironmentName != "Development")
+            {
+                throw new InvalidOperationException(
+                    "This shouldn't be invoked in non-development environments.");
+            }
+
+            var context = HttpContext.Features.Get<IExceptionHandlerFeature>();
+
+            return Problem(
+                detail: context.Error.StackTrace,
+                title: context.Error.Message);
+        }
+
+
+        [Route("/error")]
+        public IActionResult Error() => Problem();
     }
 }
