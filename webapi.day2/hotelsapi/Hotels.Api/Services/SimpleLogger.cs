@@ -3,8 +3,6 @@
     using System;
     using Microsoft.Extensions.Logging;
 
-    // this logger is just for demo
-    // ILogger<T> is recommended for logging
     public interface ISimpleLogger
     {
         void LogInfo(string message);

@@ -34,7 +34,7 @@
 
         // GET: api/Hotel/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<HotelResource>> GetHotel(long id)
+        public async Task<ActionResult<HotelResource>> GetHotel(int id)
         {
             var hotel = await this.context.Hotels.FindAsync(id);
 
@@ -48,7 +48,7 @@
 
         // PUT: api/Hotel/5
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutTodoItem(long id, HotelResource hotel)
+        public async Task<IActionResult> PutTodoItem(int id, HotelResource hotel)
         {
             if (id < 0)
             {
@@ -91,7 +91,7 @@
 
         // DELETE: api/Hotel/5
         [HttpDelete("{id}")]
-        public async Task<ActionResult<Hotel>> DeleteTodoItem(long id)
+        public async Task<ActionResult<Hotel>> DeleteTodoItem(int id)
         {
             var hotel = await this.context.Hotels.FindAsync(id);
             if (hotel == null)
@@ -104,7 +104,7 @@
             return hotel;
         }
 
-        private bool HotelExists(long id)
+        private bool HotelExists(int id)
         {
             return this.context.Hotels.Any(e => e.Id == id);
         }

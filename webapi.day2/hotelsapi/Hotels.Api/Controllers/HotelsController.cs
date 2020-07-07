@@ -28,8 +28,6 @@
         }
 
         [HttpGet("{id}")]
-        //[ResponseCache(VaryByHeader = "User-Agent", Duration = 30)]
-        [ResponseCache(VaryByQueryKeys = new []{"id"}, Duration = 30)]
         public async Task<ActionResult<HotelResource>> Get(int id)
         {
             if (id < 0)

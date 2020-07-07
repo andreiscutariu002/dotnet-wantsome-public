@@ -6,15 +6,10 @@
     using System.Threading;
     using System.Threading.Tasks;
     using Data;
-    using Data.Entities;
     using Extensions.Map;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.EntityFrameworkCore;
-    using Microsoft.Extensions.Caching.Distributed;
-    using Microsoft.Extensions.Caching.Memory;
-    using Microsoft.Extensions.Primitives;
     using Models.Rooms;
-    using Newtonsoft.Json;
     using Services;
 
     [Route("api/hotels/{hotelId}/rooms")]
@@ -38,22 +33,16 @@
                 .Where(h => h.Hotel.Id == hotelId)
                 .ToListAsync(token);
 
-            return list.Select(r=>r.MapAsResource());
+            return list.Select(r => r.MapAsResource());
         }
 
         [HttpGet("{id}")]
         public async Task<ActionResult<RoomResource>> Get(int hotelId, int id)
         {
-            if (id < 0)
-            {
-                throw new ArgumentException("Negative id exception");
-            }
+            if (id < 0) throw new ArgumentException("Negative id exception");
 
             var entity = await this.context.Rooms.FindAsync(id);
-            if (entity == null)
-            {
-                return this.NotFound();
-            }
+            if (entity == null) return this.NotFound();
 
             this.logger.LogInfo("RoomsController-Get(hotelId, roomId) hit");
 
@@ -65,10 +54,7 @@
         {
             var hotel = await this.context.Hotels.FindAsync(hotelId);
 
-            if (hotel == null)
-            {
-                return this.NotFound();
-            }
+            if (hotel == null) return this.NotFound();
 
             var entity = model.MapAsNewEntity(hotel);
             this.context.Rooms.Add(entity);
@@ -82,10 +68,7 @@
         {
             var room = await this.context.Rooms.FindAsync(id);
 
-            if (room == null)
-            {
-                return this.NotFound();
-            }
+            if (room == null) return this.NotFound();
 
             room.UpdateWith(model);
             this.context.Rooms.Update(room);
@@ -99,10 +82,7 @@
         {
             var room = await this.context.Rooms.FindAsync(id);
 
-            if (room == null)
-            {
-                return this.NotFound();
-            }
+            if (room == null) return this.NotFound();
 
             this.context.Rooms.Remove(room);
             await this.context.SaveChangesAsync();

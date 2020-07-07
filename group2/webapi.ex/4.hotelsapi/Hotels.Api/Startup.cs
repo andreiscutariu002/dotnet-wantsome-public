@@ -7,6 +7,7 @@ namespace Hotels.Api
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Hosting;
+    using Microsoft.Net.Http.Headers;
     using Microsoft.OpenApi.Models;
     using Services;
 
@@ -35,6 +36,16 @@ namespace Hotels.Api
             });
 
             services.AddTransient<INotificationService, NotificationService>();
+
+            services.AddMvc(options =>
+                {
+                    options.RespectBrowserAcceptHeader = true;
+                    options.FormatterMappings.SetMediaTypeMappingForFormat(
+                        "xml", MediaTypeHeaderValue.Parse("text/xml"));
+                    options.FormatterMappings.SetMediaTypeMappingForFormat(
+                        "json", MediaTypeHeaderValue.Parse("application/json"));
+                })
+                .AddXmlSerializerFormatters();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -58,7 +69,10 @@ namespace Hotels.Api
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "Todo API");
             });
 
-            app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapControllers();
+            });
         }
     }
 }
