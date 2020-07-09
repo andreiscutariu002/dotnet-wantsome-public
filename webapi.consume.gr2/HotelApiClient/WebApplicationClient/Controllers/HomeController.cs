@@ -8,6 +8,7 @@ using Microsoft.Extensions.Logging;
 namespace WebApplicationClient.Controllers
 {
     using System.IO;
+    using System.Net;
     using System.Net.Http;
     using System.Net.Http.Headers;
     using System.Text;
@@ -20,12 +21,12 @@ namespace WebApplicationClient.Controllers
     public class HomeController : ControllerBase
     {
         private readonly IHttpClientFactory factory;
-        private readonly HotelClient hotelClient;
+        private readonly ILogger<HomeController> logger;
 
-        public HomeController(IHttpClientFactory factory, HotelClient hotelClient)
+        public HomeController(IHttpClientFactory factory, ILogger<HomeController> logger)
         {
             this.factory = factory;
-            this.hotelClient = hotelClient;
+            this.logger = logger;
         }
 
         [HttpGet("{id}")]
@@ -38,6 +39,20 @@ namespace WebApplicationClient.Controllers
 
             var response = await client.GetAsync($"api/hotels/{id}");
             //response.EnsureSuccessStatusCode();
+
+            if (!response.IsSuccessStatusCode)
+            {
+                if (response.StatusCode == HttpStatusCode.NotFound)
+                {
+                    return this.NotFound();
+                }
+
+                var error = await response.Content.ReadAsStringAsync();
+
+                this.logger.LogError("Error from API: " + error);
+
+                return this.BadRequest();
+            }
 
             var result = await response.Content.ReadAsStringAsync();
 
