@@ -17,6 +17,8 @@
         {
             // username + password
 
+            // here can be used - https://docs.microsoft.com/en-us/aspnet/core/security/authentication/identity?view=aspnetcore-3.1&tabs=visual-studio
+
             // all good => create token
 
             return CreateToken();
@@ -31,7 +33,8 @@
             {
                 Subject = new ClaimsIdentity(new Claim[]
                 {
-                    new Claim(ClaimTypes.Name, "andrei")
+                    new Claim(ClaimTypes.Name, "andrei"),
+                    //new Claim(ClaimTypes.Role, "admin") // get from db
                 }),
                 Expires = DateTime.UtcNow.AddMinutes(30),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)

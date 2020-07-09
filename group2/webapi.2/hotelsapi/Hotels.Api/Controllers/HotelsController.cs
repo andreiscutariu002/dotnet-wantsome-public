@@ -49,6 +49,7 @@
         }
 
         [HttpPost]
+        [Authorize(Roles = "admin")]
         public async Task<ActionResult<Hotel>> Post(CreateHotelResource model)
         {
             var entity = model.MapAsNewEntity();
