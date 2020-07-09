@@ -35,6 +35,7 @@ namespace WebApplicationClient
                 c.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
             })
                 .AddHttpMessageHandler<LoggingDelegatingHandler>()
+                //Microsoft.Extensions.Http.Polly
                 .AddTransientHttpErrorPolicy(builder => builder.WaitAndRetryAsync(new[]
                 {
                     TimeSpan.FromSeconds(1),
