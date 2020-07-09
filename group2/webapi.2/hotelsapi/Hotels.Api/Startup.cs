@@ -64,14 +64,14 @@ namespace Hotels.Api
 
             services.AddMemoryCache();
 
-            //services.AddDistributedMemoryCache(); // in development 
+            services.AddDistributedMemoryCache(); // in development 
 
-            services.AddDistributedSqlServerCache(options =>
-            {
-                options.ConnectionString = "Server=.;Initial Catalog=HotelsWebApi;Trusted_Connection=True;MultipleActiveResultSets=true";
-                options.SchemaName = "dbo";
-                options.TableName = "DisCache";
-            });
+            //services.AddDistributedSqlServerCache(options =>
+            //{
+            //    options.ConnectionString = "Server=.;Initial Catalog=HotelsWebApi;Trusted_Connection=True;MultipleActiveResultSets=true";
+            //    options.SchemaName = "dbo";
+            //    options.TableName = "DisCache";
+            //});
 
             // set authentication to check bearer tokens 
             var key = Encoding.ASCII.GetBytes("0ad33b7d-6565-4992-940f-0b09869bf1f9"); // << - KEY
