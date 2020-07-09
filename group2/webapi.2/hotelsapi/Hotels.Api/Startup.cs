@@ -61,7 +61,9 @@ namespace Hotels.Api
             services.AddScoped<ISimpleLogger, SimpleLogger>();
             
             services.AddResponseCaching();
-            
+
+            services.AddMemoryCache();
+
             // set authentication to check bearer tokens 
             var key = Encoding.ASCII.GetBytes("0ad33b7d-6565-4992-940f-0b09869bf1f9"); // << - KEY
             services.AddAuthentication(x =>

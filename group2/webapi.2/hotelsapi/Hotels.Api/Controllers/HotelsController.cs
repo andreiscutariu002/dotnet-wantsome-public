@@ -22,16 +22,18 @@
     {
         private readonly ApiDbContext context;
         private readonly ISimpleLogger logger;
+        private readonly IMemoryCache memoryCache;
 
-        public HotelsController(ApiDbContext context, ISimpleLogger logger)
+        public HotelsController(ApiDbContext context, ISimpleLogger logger, IMemoryCache memoryCache)
         {
             this.context = context;
             this.logger = logger;
+            this.memoryCache = memoryCache;
         }
 
         [HttpGet("{id}")]
         //[ResponseCache(VaryByQueryKeys = new string[] { "id" }, Duration = 30)]
-        [ResponseCache(VaryByQueryKeys = new[] { "*" }, Duration = 30)]
+        //[ResponseCache(VaryByQueryKeys = new[] { "*" }, Duration = 30)]
         //[ResponseCache(VaryByHeader = "User-Agent", Duration = 30)]
         public async Task<ActionResult<HotelResource>> Get(int id)
         {
@@ -40,15 +42,36 @@
                 throw new ArgumentException("Negative id exception");
             }
 
-            var entity = await this.context.Hotels.FindAsync(id);
-            if (entity == null)
+            var key = $"_entry_{id}";
+            var itemExistInCache = this.memoryCache.TryGetValue(key, out var cachedEntity);
+
+            if (itemExistInCache)
             {
-                return this.NotFound();
+                // exist in cache
+
+                var entity = (Hotel) cachedEntity;
+
+                return entity.MapAsModel();
             }
+            else
+            {
+                var entity = await this.context.Hotels.FindAsync(id);
+                if (entity == null)
+                {
+                    return this.NotFound();
+                }
 
-            this.logger.LogInfo("HotelsController-Get(id) hit");
+                this.memoryCache.Set(key, entity, new MemoryCacheEntryOptions
+                {
+                    //AbsoluteExpiration = DateTimeOffset.Now.AddMinutes(1), // 1 min exiration
+                    SlidingExpiration = TimeSpan.FromMinutes(1),
+                    Priority = CacheItemPriority.High
+                });
 
-            return entity.MapAsModel();
+                this.logger.LogInfo("HotelsController-Get(id) hit");
+
+                return entity.MapAsModel();
+            }
         }
 
         [HttpPost]
