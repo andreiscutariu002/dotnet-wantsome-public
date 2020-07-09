@@ -30,7 +30,7 @@ namespace WebApplicationClient
                 c.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
             });
 
-            services.AddHttpClient<HotelClient>();
+            //services.AddHttpClient<HotelClient>();
 
             services.AddControllers();
         }
