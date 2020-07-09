@@ -8,6 +8,7 @@
     using Data;
     using Data.Entities;
     using Extensions.Map;
+    using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Caching.Memory;
@@ -16,6 +17,7 @@
 
     [Route("api/hotels")]
     [ApiController]
+    [Authorize]
     public class HotelsController : ControllerBase
     {
         private readonly ApiDbContext context;
