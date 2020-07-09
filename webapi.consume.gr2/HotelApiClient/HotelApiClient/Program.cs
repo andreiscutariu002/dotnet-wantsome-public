@@ -7,6 +7,7 @@ namespace HotelApiClient
     using System.Net.Http.Headers;
     using System.Text;
     using System.Text.Json.Serialization;
+    using System.Threading;
     using System.Threading.Tasks;
     using Newtonsoft.Json;
 
@@ -21,10 +22,12 @@ namespace HotelApiClient
 
             //var hotelResponse = await hotelApiClient.GetHotel(1);
 
-            var hotel = await hotelApiClient.CreateHotel(new HotelsApiClient.CreateHotelModel
-                {City = "Iasi", Name = "123456"});
+            //var hotel = await hotelApiClient.CreateHotel(new HotelsApiClient.CreateHotelModel
+            //    {City = "Iasi", Name = "123456"});
 
-            Console.WriteLine("Create hotel with id: " + hotel.Id);
+            //Console.WriteLine("Create hotel with id: " + hotel.Id);
+
+            await hotelApiClient.LongRunning();
         }
     }
 
@@ -75,6 +78,15 @@ namespace HotelApiClient
             var result = await response.Content.ReadAsStringAsync();
 
             return JsonConvert.DeserializeObject<HotelModel>(result);
+        }
+
+        public async Task<string> LongRunning()
+        {
+            var cancellationTokenSource = new CancellationTokenSource();
+            cancellationTokenSource.CancelAfter(TimeSpan.FromSeconds(5));
+            var response = await this.client.GetAsync($"api/hotels/long-running", cancellationTokenSource.Token);
+            var result = await response.Content.ReadAsStringAsync();
+            return result;
         }
 
         public class CreateHotelModel

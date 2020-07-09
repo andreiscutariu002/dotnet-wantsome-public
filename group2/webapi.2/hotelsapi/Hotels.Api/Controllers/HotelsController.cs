@@ -110,7 +110,7 @@
                 return this.NotFound();
             }
 
-            var rooms = await this.context.Rooms.Include(x=>x.Hotel).Where(x => x.Hotel.Id == id).ToListAsync();
+            var rooms = await this.context.Rooms.Include(x => x.Hotel).Where(x => x.Hotel.Id == id).ToListAsync();
             foreach (var room in rooms)
             {
                 this.context.Rooms.Remove(room);
@@ -118,8 +118,28 @@
 
             this.context.Hotels.Remove(hotel);
             await this.context.SaveChangesAsync();
-            
+
             return hotel;
+        }
+
+        [HttpGet("long-running")]
+        public async Task<ActionResult<string>> LongRunning(CancellationToken token)
+        {
+            while (true)
+            {
+                await Task.Delay(TimeSpan.FromSeconds(1));
+
+                if (token.IsCancellationRequested == true)
+                {
+                    break;
+                }
+
+                this.logger.LogInfo("Operation in progress ...");
+            }
+
+            this.logger.LogInfo("Operation finished");
+
+            return "done";
         }
     }
 }
