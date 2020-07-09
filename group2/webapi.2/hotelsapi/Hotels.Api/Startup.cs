@@ -26,8 +26,8 @@ namespace Hotels.Api
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {   
-            //services.AddDbContext<ApiDbContext>(options => options.UseSqlServer(this.Configuration.GetConnectionString("DefaultConnection")));
-            services.AddDbContext<ApiDbContext>(options => options.UseInMemoryDatabase("Hotels.Api"));
+            services.AddDbContext<ApiDbContext>(options => options.UseSqlServer(this.Configuration.GetConnectionString("DefaultConnection")));
+            //services.AddDbContext<ApiDbContext>(options => options.UseInMemoryDatabase("Hotels.Api"));
 
             services.AddControllers();
 
@@ -59,9 +59,9 @@ namespace Hotels.Api
             });
 
             services.AddScoped<ISimpleLogger, SimpleLogger>();
+            
             services.AddResponseCaching();
-            services.AddMemoryCache();
-
+            
             // set authentication to check bearer tokens 
             var key = Encoding.ASCII.GetBytes("0ad33b7d-6565-4992-940f-0b09869bf1f9"); // << - KEY
             services.AddAuthentication(x =>
@@ -80,6 +80,15 @@ namespace Hotels.Api
                     ValidateAudience = false
                 };
             });
+
+            //configure identity server
+            //services.AddAuthentication("Bearer")
+            //    .AddJwtBearer("Bearer", options =>
+            //    {
+            //        options.Authority = "http://localhost:5000";
+            //        options.RequireHttpsMetadata = false;
+            //        options.Audience = "hotels-api";
+            //    });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -108,6 +117,8 @@ namespace Hotels.Api
 
             app.UseAuthentication();
             app.UseAuthorization();
+
+            app.UseResponseCaching();
 
             app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
         }

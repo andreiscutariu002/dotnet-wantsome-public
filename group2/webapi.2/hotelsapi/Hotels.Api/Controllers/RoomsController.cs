@@ -15,7 +15,7 @@
 
     [Route("api/hotels/{hotelId}/rooms")]
     [ApiController]
-    [Authorize]
+    //[Authorize]
     public class RoomsController : ControllerBase
     {
         private readonly ApiDbContext context;

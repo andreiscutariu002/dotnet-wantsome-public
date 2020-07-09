@@ -27,10 +27,9 @@ namespace Client
             var tokenResponse = await client.RequestClientCredentialsTokenAsync(new ClientCredentialsTokenRequest
             {
                 Address = disco.TokenEndpoint,
-                ClientId = "client",
-                ClientSecret = "secret",
-
-                Scope = "api1"
+                ClientId = "console-app",
+                ClientSecret = "0ad33b7d-6565-4992-940f-0b09869bf1f9",
+                Scope = "hotels-api"
             });
             
             if (tokenResponse.IsError)
@@ -42,20 +41,20 @@ namespace Client
             Console.WriteLine(tokenResponse.Json);
             Console.WriteLine("\n\n");
 
-            // call api
-            var apiClient = new HttpClient();
-            apiClient.SetBearerToken(tokenResponse.AccessToken);
+            ////// call api
+            //var apiClient = new HttpClient();
+            //apiClient.SetBearerToken(tokenResponse.AccessToken);
 
-            var response = await apiClient.GetAsync("http://localhost:5001/identity");
-            if (!response.IsSuccessStatusCode)
-            {
-                Console.WriteLine(response.StatusCode);
-            }
-            else
-            {
-                var content = await response.Content.ReadAsStringAsync();
-                Console.WriteLine(JArray.Parse(content));
-            }
+            //var response = await apiClient.GetAsync("http://localhost:5002/identity");
+            //if (!response.IsSuccessStatusCode)
+            //{
+            //    Console.WriteLine(response.StatusCode);
+            //}
+            //else
+            //{
+            //    var content = await response.Content.ReadAsStringAsync();
+            //    Console.WriteLine(JArray.Parse(content));
+            //}
         }
     }
 }

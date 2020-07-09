@@ -12,7 +12,8 @@ namespace IdentityServer
         public static IEnumerable<ApiResource> Apis =>
             new List<ApiResource>
             {
-                new ApiResource("api1", "My API")
+                new ApiResource("api-01", "My API"),
+                new ApiResource("hotels-api", "My API"),
             };
 
         public static IEnumerable<Client> Clients =>
@@ -20,19 +21,18 @@ namespace IdentityServer
             {
                 new Client
                 {
-                    ClientId = "client",
-
                     // no interactive user, use the clientid/secret for authentication
                     AllowedGrantTypes = GrantTypes.ClientCredentials,
 
+                    ClientId = "console-app",
                     // secret for authentication
                     ClientSecrets =
                     {
-                        new Secret("secret".Sha256())
+                        new Secret("0ad33b7d-6565-4992-940f-0b09869bf1f9".Sha256())
                     },
 
                     // scopes that client has access to
-                    AllowedScopes = { "api1" }
+                    AllowedScopes = { "api-01", "hotels-api" }
                 }
             };
     }

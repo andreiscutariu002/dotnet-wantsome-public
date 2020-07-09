@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Hotels.Data.Migrations
 {
     [DbContext(typeof(ApiDbContext))]
-    [Migration("20200108173204_AddRoomDbSet")]
-    partial class AddRoomDbSet
+    [Migration("20200709084019_Tables")]
+    partial class Tables
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {

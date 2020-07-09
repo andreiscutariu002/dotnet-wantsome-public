@@ -17,7 +17,7 @@
 
     [Route("api/hotels")]
     [ApiController]
-    [Authorize]
+    //[Authorize]
     public class HotelsController : ControllerBase
     {
         private readonly ApiDbContext context;
@@ -30,6 +30,9 @@
         }
 
         [HttpGet("{id}")]
+        //[ResponseCache(VaryByQueryKeys = new string[] { "id" }, Duration = 30)]
+        [ResponseCache(VaryByQueryKeys = new[] { "*" }, Duration = 30)]
+        //[ResponseCache(VaryByHeader = "User-Agent", Duration = 30)]
         public async Task<ActionResult<HotelResource>> Get(int id)
         {
             if (id < 0)
@@ -49,7 +52,6 @@
         }
 
         [HttpPost]
-        [Authorize(Roles = "admin")]
         public async Task<ActionResult<Hotel>> Post(CreateHotelResource model)
         {
             var entity = model.MapAsNewEntity();
